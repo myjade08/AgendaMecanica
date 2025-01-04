@@ -18,7 +18,7 @@ class AppointmentResource extends Resource
 {
     protected static ?string $model = Appointment::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-calendar';
 
     public static function form(Form $form): Form
     {
@@ -72,30 +72,6 @@ class AppointmentResource extends Resource
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
-    }
-    public static function rules(Model $record = null): array
-    {
-        return [
-            'customer_id'  => ['required', 'exists:customers,id'],
-            'mechanic_id'  => ['required', 'exists:mechanics,id'],
-            'scheduled_at' => [
-                'required',
-                // Validación custom: no permitir duplicados con el mismo mechanic_id + scheduled_at
-                function ($attribute, $value, $fail) use ($record) {
-                    $exists = Appointment::where('mechanic_id', request('mechanic_id'))
-                        ->where('scheduled_at', $value)
-                        // Ignora la cita actual si se está editando
-                        ->when($record, function ($query) use ($record) {
-                            return $query->where('id', '!=', $record->id);
-                        })
-                        ->exists();
-
-                    if ($exists) {
-                        $fail('El mecánico ya tiene un turno en esa fecha y hora.');
-                    }
-                }
-            ],
-        ];
     }
 
 
