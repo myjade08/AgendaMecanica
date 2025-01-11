@@ -12,5 +12,6 @@ class Mechanic extends Model
     protected $fillable = [
         'name',
         'specialty',
+        'image'
     ];
 }
